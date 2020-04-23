@@ -13,27 +13,27 @@ public class TestClass_1 {
 
     @Before
     void before() {
-        System.out.println("Запущен метод before");
+        System.out.println("Запущен метод before объкта класса TestClass_1 со счетчиком " + COUNT);
     }
 
     @After
     void after() {
-        System.out.println("Запущен метод after");
+        System.out.println("Запущен метод after объкта класса TestClass_1 со счетчиком " + COUNT);
     }
 
     @Test
     void test_1() throws Exception {
-        System.out.println("Запущен метод test_1");
+        System.out.println("Запущен метод test_1 объкта класса TestClass_1 со счетчиком " + COUNT);
     }
 
     @Test
     void test_2() throws Exception {
-        System.out.println("Запущен метод test_2");
+        System.out.println("Запущен метод test_2 объкта класса TestClass_1 со счетчиком " + COUNT);
         throw new Exception();
     }
 
     @Test
     void test_3() throws Exception {
-        System.out.println("Запущен метод test_3");
+        System.out.println("Запущен метод test_3 объкта класса TestClass_1 со счетчиком " + COUNT);
     }
 }
