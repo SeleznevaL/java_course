@@ -44,11 +44,7 @@ public class TestRunner {
                     after.setAccessible(true);
                     after.invoke(instance);
                 }
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
