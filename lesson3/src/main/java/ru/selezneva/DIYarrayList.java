@@ -11,9 +11,10 @@ public class DIYarrayList<E> implements List<E> {
     private Object[] values = new Object[INITIAL_CAPASITY];
     private int size = 0;
     private int capasity = INITIAL_CAPASITY;
+    protected int modCount = 0;
 
     private void increaseCapasity() {
-        capasity *= 2;
+        capasity *= 3;
         values = Arrays.copyOf(values,capasity);
     }
 
@@ -45,12 +46,9 @@ public class DIYarrayList<E> implements List<E> {
 
     @Override
     public E set(int index, E element) {
-        if (index < size) {
-            values[index] = element;
-            return element;
-        } else {
-            throw new IndexOfBondsException();
-        }
+        E oldValue = (E) values[index];
+        values[index] = element;
+        return oldValue;
     }
 
     @Override
@@ -59,12 +57,14 @@ public class DIYarrayList<E> implements List<E> {
             increaseCapasity();
         }
         values[size++] = e;
+        modCount++;
         return true;
     }
 
     @Override
     public boolean addAll(Collection<? extends E> c) {
         c.stream().forEach(this::add);
+        modCount++;
         return true;
     }
 
@@ -73,6 +73,7 @@ public class DIYarrayList<E> implements List<E> {
         values = new Object[INITIAL_CAPASITY];
         size = 0;
         reduceCapacity();
+        modCount++;
     }
 
     @Override
@@ -85,10 +86,11 @@ public class DIYarrayList<E> implements List<E> {
     }
 
     static <E> void copy(List<? super E> dest, List<? extends E> src) {
-        dest.clear();
-        for (int i = 0; i < src.size(); i++) {
-            dest.add(src.get(i));
-        }
+        int srcSize = src.size();
+        if (srcSize > dest.size())
+            throw new IndexOutOfBoundsException("Source does not fit in dest");
+        for (int i=0; i<srcSize; i++)
+                dest.set(i, src.get(i));
     }
 
     static <E> void sort(List<E> list, Comparator<? super E> c) {
@@ -105,6 +107,18 @@ public class DIYarrayList<E> implements List<E> {
     }
 
     @Override
+    public Iterator<E> iterator() {
+        return new IteratorImpl<E>();
+    }
+
+    @Override
+    public ListIterator<E> listIterator() {
+        return new ListIeratorImpl<E>();
+    }
+
+
+    //все дальнейшие методы не поддерживаются
+    @Override
     public boolean contains(Object o) {
         throw new UnsupportedOperationException();
     }
@@ -113,12 +127,6 @@ public class DIYarrayList<E> implements List<E> {
     public boolean remove(Object o) {
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    public Iterator<E> iterator() {
-        throw new UnsupportedOperationException();
-    }
-
 
     @Override
     public boolean containsAll(Collection<?> c) {
@@ -140,8 +148,6 @@ public class DIYarrayList<E> implements List<E> {
         throw new UnsupportedOperationException();
     }
 
-
-    //все дальнейшие методы не поддерживаются
     @Override
     public <T> T[] toArray(T[] a) {
         throw new UnsupportedOperationException();
@@ -168,11 +174,6 @@ public class DIYarrayList<E> implements List<E> {
     }
 
     @Override
-    public ListIterator<E> listIterator() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public ListIterator<E> listIterator(int index) {
         throw new UnsupportedOperationException();
     }
@@ -180,5 +181,89 @@ public class DIYarrayList<E> implements List<E> {
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
         throw new UnsupportedOperationException();
+    }
+
+    private class IteratorImpl<E> implements Iterator<E> {
+        int pointer;
+        int lastRet = -1;
+        int expectedModCount = modCount;
+
+
+        @Override
+        public boolean hasNext() {
+            return pointer != size;
+        }
+
+        @Override
+        public E next() {
+            checkForComodification();
+            int i = pointer;
+            if (i >= size)
+                throw new NoSuchElementException();
+            Object[] elementData = DIYarrayList.this.values;
+            if (i >= elementData.length)
+                throw new ConcurrentModificationException();
+            pointer = i + 1;
+            return (E) elementData[lastRet = i];
+        }
+
+        protected void checkForComodification() {
+            if (modCount != expectedModCount)
+                throw new ConcurrentModificationException();
+        }
+    }
+
+    private class ListIeratorImpl<T> extends IteratorImpl<E> implements ListIterator<E> {
+
+        @Override
+        public boolean hasPrevious() {
+            return pointer != 0;
+        }
+
+        @Override
+        public E previous() {
+            checkForComodification();
+            int i = pointer - 1;
+            if (i < 0)
+                throw new NoSuchElementException();
+            Object[] elementData = DIYarrayList.this.values;
+            if (i >= elementData.length)
+                throw new ConcurrentModificationException();
+            pointer = i;
+            return (E) elementData[lastRet = i];
+        }
+
+        @Override
+        public int nextIndex() {
+            return pointer;
+        }
+
+        @Override
+        public int previousIndex() {
+            return pointer - 1;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void set(E element) {
+            if (lastRet < 0)
+                throw new IllegalStateException();
+            checkForComodification();
+
+            try {
+                DIYarrayList.this.set(lastRet, element);
+            } catch (IndexOutOfBoundsException ex) {
+                throw new ConcurrentModificationException();
+            }
+        }
+
+        @Override
+        public void add(E e) {
+            throw new UnsupportedOperationException();
+        }
     }
 }
