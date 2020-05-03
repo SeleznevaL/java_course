@@ -17,6 +17,8 @@ public class Main {
         My my = new My();
         ObjectName name = new ObjectName("ru.selezneva:type=My");
         mBeanServer.registerMBean(my, name);
+        my.setCount(1000);
+        my.run();
     }
 
     private static void switchOnMonitoring() {

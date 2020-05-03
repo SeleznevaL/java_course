@@ -6,29 +6,27 @@ import java.util.Scanner;
 
 public class My implements MyMBean {
     private int count;
-    private Queue<Integer> queue = new LinkedList<>();
-    private Scanner scanner = new Scanner(System.in);
-
     public void run() throws InterruptedException {
+        Queue<String> queue = new LinkedList<>();
         while (true) {
             for (int i = 0; i < count; i++) {
-                queue.add(i);
+                queue.add(new String(new char[1]));
                 if (i % 2 == 0) {
                     queue.remove();
                 }
-                Thread.sleep(5000);
-                count *= 2;
+//                Thread.sleep(5000);
             }
+            count *= 2;
         }
-    }
-
-    @Override
-    public void setCount(int count) {
-        this.count = count;
     }
 
     @Override
     public int getCount() {
         return count;
+    }
+
+    @Override
+    public void setCount(int count) {
+        this.count = count;
     }
 }
