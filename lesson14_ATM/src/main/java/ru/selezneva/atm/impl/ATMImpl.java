@@ -15,16 +15,16 @@ import java.util.stream.Collectors;
 
 
 public class ATMImpl implements ATM, CashMashine {
-    private List<Cassette> cassettes;
+    private TreeMap<Nominal, Cassette> cassettes;
 
     //конструктор создающий внутренную структуру ячеек
     public ATMImpl(List<CashPair> cashPairs) {
-        cassettes = new ArrayList<>();
+        cassettes = new TreeMap<>();
         for (CashPair cashPair : cashPairs) {
             CassetteImpl cassette = new CassetteImpl(cashPair.getNominal());
             if (cashPair.getCount() <= cassette.getCapacity()) {
                 cassette.add(cashPair.getCount());
-                cassettes.add(cassette);
+                cassettes.put(cashPair.getNominal(), cassette);
             } else  {
                 throw new IncorectValue();
             }
@@ -33,9 +33,9 @@ public class ATMImpl implements ATM, CashMashine {
 
 
     public ATMImpl() {
-        cassettes = new ArrayList<>();
+        cassettes = new TreeMap<>();
         for ( var nominal : Nominal.values() ) {
-            cassettes.add( new CassetteImpl( nominal ) );
+            cassettes.put(nominal, new CassetteImpl( nominal ) );
         }
     }
 
@@ -54,8 +54,8 @@ public class ATMImpl implements ATM, CashMashine {
         //провереям, что операция добавления может быть выполнена для каждой ячейки
         for (Nominal nominal : nominalMap.keySet()) {
             boolean flag = false;
-            for (Cassette cassette : cassettes) {
-                if (cassette.getNominal().equals(nominal) && (cassette.getCapacity() - nominalMap.get(nominal) >= 0)) {
+            for (Nominal n: cassettes.keySet()) {
+                if (n.equals(nominal) && (cassettes.get(n).getCapacity() - nominalMap.get(nominal) >= 0)) {
                     flag = true;
                 }
             }
@@ -66,9 +66,9 @@ public class ATMImpl implements ATM, CashMashine {
         //добавляем купюры в кассеты
         int sum = 0;
         for (Nominal nominal : nominalMap.keySet()) {
-            for (Cassette cassette : cassettes) {
-                if (cassette.getNominal().equals(nominal)) {
-                    cassette.add(nominalMap.get(nominal));
+            for (Nominal n: cassettes.keySet()) {
+                if (n.equals(nominal)) {
+                    cassettes.get(n).add(nominalMap.get(nominal));
                     sum += nominal.getValue() * nominalMap.get(nominal);
                 }
             }
@@ -78,18 +78,15 @@ public class ATMImpl implements ATM, CashMashine {
 
     @Override
     public List<Nominal> get( int sum ) {
-        //получаем список доступных в банкомате номиналов
-        Map<Nominal, Integer> nominalMap = new TreeMap<>((o1, o2) -> o2.getValue() - o1.getValue());
-        for (Cassette cassette : cassettes) {
-            nominalMap.put(cassette.getNominal(), cassette.count());
-        }
         //набираем сумму доступными купюрами
         Map<Nominal, Integer> result = new HashMap<>();
         int temp = sum;
-        for (Nominal nominal : nominalMap.keySet()) {
+        TreeSet<Nominal> nominals = new TreeSet<>(Comparator.comparingInt(Nominal::getValue).reversed());
+        nominals.addAll(cassettes.keySet());
+        for (Nominal nominal : nominals) {
             int k = temp / nominal.getValue();
             if (k > 0) {
-                k = Math.min(k, nominalMap.get(nominal));
+                k = Math.min(k, cassettes.get(nominal).count());
                 temp = temp - k * nominal.getValue();
                 result.put(nominal, k);
             }
@@ -103,11 +100,7 @@ public class ATMImpl implements ATM, CashMashine {
             for (int i = 1; i <= result.get(nominal); i++) {
                 list.add(nominal);
             }
-            for (Cassette cassette : cassettes) {
-                if (cassette.getNominal().equals(nominal)) {
-                    cassette.extract(result.get(nominal));
-                }
-            }
+            cassettes.get(nominal).extract(result.get(nominal));
         }
         list.sort(Comparator.comparingInt(nominal -> nominal.getValue()));
         return list;
@@ -116,7 +109,7 @@ public class ATMImpl implements ATM, CashMashine {
     @Override
     public List<CashPair> balance() {
         return
-                cassettes.stream()
+                cassettes.values().stream()
                         .map( cassette -> new CashPair( cassette.getNominal(), cassette.count() ) )
                         .collect( Collectors.toList() );
     }
