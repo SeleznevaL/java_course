@@ -1,0 +1,10 @@
+ru/selezneva/TestRunner.class
+ru/selezneva/test/TestClass_1.class
+ru/selezneva/test/TestClass_2.class
+ru/selezneva/MainClass.class
+ru/selezneva/annotations/Test.class
+ru/selezneva/annotations/After.class
+ru/selezneva/TestRunner$TestsResults.class
+ru/selezneva/TestRunner$1.class
+ru/selezneva/TestRunner$MethodsForTest.class
+ru/selezneva/annotations/Before.class
