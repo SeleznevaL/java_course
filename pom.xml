@@ -11,6 +11,7 @@
         <module>lesson1</module>
         <module>lesson8</module>
         <module>lesson14_ATM</module>
+        <module>lesson15_ATM_IO</module>
     </modules>
     <packaging>pom</packaging>
 
