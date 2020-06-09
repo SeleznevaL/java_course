@@ -30,13 +30,11 @@ public class App {
                 log.info("Состояние банкомата прочитано из файла");
             }
         } catch (DownloadATMExeption e) {
-            System.out.println("Ошибка чтения состояния банкомата");
             log.error("Ошибка чтения состояния банкомата {} ", e.getStackTrace());
         }
 
         if ( atm == null ) {
             atm = new ATMImpl();
-            System.out.println("Пустой банкомат инициализирован");
             log.info("Пустой банкомат инициализирован");
         }
         printATMBalance(atm);
@@ -69,7 +67,6 @@ public class App {
         try {
             nominals = banknoteScanner.scanBanknote(nextString("Введите номиналы купюр в строку через пробел"));
         } catch (IncorectValue e) {
-            System.out.println(e.getMessage());
             log.error("Купюра не может быть считана", e);
         }
         if (nominals != null) {
@@ -78,7 +75,6 @@ public class App {
                 System.out.println("Внесено " + sum + " рублей");
                 log.info("В банкомат внесены купюры {}", nominals);
             } catch (NoAvailableRequestCount e) {
-                System.out.println("Сумма не может быть принята");
                 log.error("Ошибка внесения купюр", e);
             }
         }
@@ -92,7 +88,6 @@ public class App {
             System.out.println("Выдано" + nominals);
             log.info("Выданы купюры {}", nominals);
         } catch (AmountCannotBeCollected e) {
-            System.out.println("Сумма не может быть выдана доступными купюрами");
             log.error("Ошибка выдачи", e);
         }
         printATMBalance(atm);
