@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <!-- Секция аппендеров -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="file" class="ch.qos.logback.core.FileAppender">
+        <file>logs/app.log</file>
+        <encoder>
+            <pattern>%date %level [%thread] [%file:%line] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Секция логгеров -->
+    <logger name="ru.selezneva" level="ERROR" additivity="true">
+        <appender-ref ref="console" />
+    </logger>
+    <!-- Корневой логгер -->
+    <root level="INFO">
+        <appender-ref ref="file" />
+    </root>
+</Configuration>
