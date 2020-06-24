@@ -7,9 +7,7 @@ import ru.selezneva.L21_SpringBoot_adv.atm.CashMashineOperations;
 import ru.selezneva.L21_SpringBoot_adv.atm.CassetteOperations;
 import ru.selezneva.L21_SpringBoot_adv.atm.dto.CashPair;
 import ru.selezneva.L21_SpringBoot_adv.atm.entity.ATM;
-import ru.selezneva.L21_SpringBoot_adv.atm.entity.Cassette;
 import ru.selezneva.L21_SpringBoot_adv.atm.exceptions.AmountCannotBeCollected;
-import ru.selezneva.L21_SpringBoot_adv.atm.exceptions.IncorectValue;
 import ru.selezneva.L21_SpringBoot_adv.atm.exceptions.NoAvailableRequestCount;
 import ru.selezneva.L21_SpringBoot_adv.atm.ref.Nominal;
 
@@ -18,10 +16,12 @@ import java.util.stream.Collectors;
 
 @Component
 public class ATMOperationsImpl implements ATMOperations, CashMashineOperations {
-    @Autowired
     private CassetteOperations cassetteOperations;
 
-
+    @Autowired
+    ATMOperationsImpl(CassetteOperations cassetteOperations) {
+        this.cassetteOperations = cassetteOperations;
+    }
 
     @Override
     public int add(ATM atm, List<Nominal> pack) {

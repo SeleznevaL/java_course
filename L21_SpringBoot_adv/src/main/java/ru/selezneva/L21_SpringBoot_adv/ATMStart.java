@@ -122,4 +122,8 @@ public class ATMStart {
         }
         log.info("Выведено состояние банкомата");
     }
+
+    private void setAtm(ATM atm) {
+        this.atm = atm;
+    }
 }
