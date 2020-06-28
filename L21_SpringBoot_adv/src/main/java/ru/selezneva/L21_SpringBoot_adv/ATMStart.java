@@ -35,7 +35,7 @@ public class ATMStart {
 
     public void start(Integer id) {
         try {
-            if (id != null) {
+            if (id != 0) {
                 ATM atm = atmSaving.download(id);
                 atmId = atm.getId();
                 log.info("Состояние банкомата прочитано из базы данных");

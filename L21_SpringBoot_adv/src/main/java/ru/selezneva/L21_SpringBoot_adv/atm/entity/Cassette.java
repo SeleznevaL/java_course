@@ -24,9 +24,10 @@ public class Cassette {
     Integer id;
 
     @Column
+    @Enumerated(EnumType.STRING)
     Nominal nominal;
 
-    @Column
+    @Column(name = "cassette_count")
     Integer cassetteCount = 0;
 
     @Column

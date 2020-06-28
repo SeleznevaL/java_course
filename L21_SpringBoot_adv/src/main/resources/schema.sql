@@ -5,10 +5,10 @@ create table atm(
 
 create table cassette(
     id bigserial,
-    nominal varchar(255),
-    cassetteCount varchar(255),
-    capasity integer,
-    atm_id integer
-    primary key (id)
-    foreign key (atm_id) references  atm(id)
+    nominal VARCHAR(50),
+    cassette_count bigint,
+    capacity bigint,
+    atm_id bigint,
+    primary key (id),
+    foreign key (atm_id) references atm(id)
 );

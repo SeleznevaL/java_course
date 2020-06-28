@@ -12,7 +12,7 @@ public class ApplicationCommands {
     private final ATMStart atmStart;
 
     @ShellMethod(value = "Start ATM", key = {"start"})
-    public void start(@ShellOption(defaultValue = "") String atmId) {
+    public void start(@ShellOption(defaultValue = "0") String atmId) {
         atmStart.start(Integer.parseInt(atmId));
     }
 }

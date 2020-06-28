@@ -15,11 +15,6 @@ public class CassetteRepositoryImpl implements CassetteRepository {
     EntityManager entityManager;
 
     @Override
-    public Cassette get(int id) {
-        return entityManager.find(Cassette.class, id);
-    }
-
-    @Override
     @Transactional
     public Cassette create(Cassette cassette) {
         entityManager.persist(cassette);
