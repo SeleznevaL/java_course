@@ -1,7 +1,7 @@
 package ru.selezneva.L21_SpringBoot_adv.atm.utils.impl;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.selezneva.L21_SpringBoot_adv.atm.exceptions.IncorectValue;
@@ -11,7 +11,7 @@ import ru.selezneva.L21_SpringBoot_adv.atm.utils.BanknoteScanner;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 public class BanknoteScannerImplTest {
@@ -40,7 +40,7 @@ public class BanknoteScannerImplTest {
 
     @Test
     public void scanBanknoteError() {
-        assertThrows(IncorectValue.class, () -> {
+        Assertions.assertThrows(IncorectValue.class, () -> {
             subj.scanBanknote("50000 100 100 200 500 5000");
         });
     }

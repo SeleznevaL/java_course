@@ -20,7 +20,7 @@ public enum Nominal {
     }
 
     public static Nominal getByValue(int value){
-        for (var nominal: values()){
+        for (Nominal nominal: values()){
             if (nominal.value == value) return nominal;
         }
         return null;

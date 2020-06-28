@@ -24,7 +24,7 @@ public class ATMStart {
     private final ATMOperations atmOperations;
     private final CashMashineOperations cmo;
     private final BanknoteScanner banknoteScanner;
-    private ATM atm;
+    private Integer atmId;
 
     public ATMStart(ATMSaving atmSaving, ATMOperations atmOperations, CashMashineOperations cmo, BanknoteScanner banknoteScanner) {
         this.atmSaving = atmSaving;
@@ -33,29 +33,31 @@ public class ATMStart {
         this.banknoteScanner = banknoteScanner;
     }
 
-    public void start(String path) {
+    public void start(Integer id) {
         try {
-            if (!path.isEmpty()) {
-                atm = atmSaving.downloadFromFile(path);
-                log.info("Состояние банкомата прочитано из файла");
+            if (id != null) {
+                ATM atm = atmSaving.download(id);
+                atmId = atm.getId();
+                log.info("Состояние банкомата прочитано из базы данных");
             } else {
-                atm = new ATM();
+                ATM atm = atmSaving.create();
+                atmId = atm.getId();
                 log.info("Пустой банкомат инициализирован");
             }
         } catch (DownloadATMExeption e) {
             log.error("Ошибка чтения состояния банкомата {} ", e.getStackTrace());
         }
-        printATMBalance(atm);
+        printATMBalance(atmId);
 
         int answer = 0;
         while (answer != 3) {
             answer = nextInt("Введите номер пункта меню: \n 1. Принять наличные \n 2. Выдать наличные \n 3. Выйти");
             switch (answer) {
                 case 1:
-                    cashAcceptance(atm);
+                    cashAcceptance(atmId);
                     break;
                 case 2:
-                    cashWithdrawal(atm);
+                    cashWithdrawal(atmId);
                     break;
                 case 3:
                     System.out.println("Выход");
@@ -65,11 +67,9 @@ public class ATMStart {
                     break;
             }
         }
-        atmSaving.save(atm, "atm.json");
-        log.info("Сохранено состояние банкомата {}", atm);
     }
 
-    private void cashAcceptance(ATM atm) {
+    private void cashAcceptance(Integer atmId) {
         List<Nominal> nominals = null;
         try {
             nominals = banknoteScanner.scanBanknote(nextString("Введите номиналы купюр в строку через пробел"));
@@ -78,26 +78,26 @@ public class ATMStart {
         }
         if (nominals != null) {
             try {
-                int sum = atmOperations.add(atm, nominals);
+                int sum = atmOperations.add(atmId, nominals);
                 System.out.println("Внесено " + sum + " рублей");
                 log.info("В банкомат внесены купюры {}", nominals);
             } catch (NoAvailableRequestCount e) {
                 log.error("Ошибка внесения купюр", e);
             }
         }
-        printATMBalance(atm);
+        printATMBalance(atmId);
     }
 
-    private void cashWithdrawal(ATM atm) {
+    private void cashWithdrawal(Integer atmId) {
         int sum = Integer.parseInt(nextString("Введите сумму выдачи"));
         try {
-            List<Nominal> nominals = atmOperations.get(atm, sum);
+            List<Nominal> nominals = atmOperations.get(atmId, sum);
             System.out.println("Выдано" + nominals);
             log.info("Выданы купюры {}", nominals);
         } catch (AmountCannotBeCollected e) {
             log.error("Ошибка выдачи", e);
         }
-        printATMBalance(atm);
+        printATMBalance(atmId);
     }
 
     private static String nextString(String message) {
@@ -114,16 +114,13 @@ public class ATMStart {
         return i;
     }
 
-    private void printATMBalance(ATM atm) {
+    private void printATMBalance(Integer atmId) {
+        ATM atm = atmSaving.download(atmId);
         List<CashPair> balance = cmo.balance(atm);
         System.out.println("Состояние банкомата: ");
         for ( CashPair pair : balance ) {
             System.out.println("  " + pair.getNominal() + " - " + pair.getCount());
         }
         log.info("Выведено состояние банкомата");
-    }
-
-    private void setAtm(ATM atm) {
-        this.atm = atm;
     }
 }
