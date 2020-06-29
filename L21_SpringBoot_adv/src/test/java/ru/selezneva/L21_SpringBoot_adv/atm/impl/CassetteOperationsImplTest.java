@@ -3,40 +3,41 @@ package ru.selezneva.L21_SpringBoot_adv.atm.impl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.selezneva.L21_SpringBoot_adv.atm.entity.Cassette;
 import ru.selezneva.L21_SpringBoot_adv.atm.exceptions.IncorectValue;
 import ru.selezneva.L21_SpringBoot_adv.atm.ref.Nominal;
+import ru.selezneva.L21_SpringBoot_adv.atm.repository.CassetteRepository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
 public class CassetteOperationsImplTest {
-    CassetteOperationsImpl subj = new CassetteOperationsImpl();
-    @Mock
+    @MockBean
+    CassetteRepository cassetteRepository;
+    CassetteOperationsImpl subj;
     Cassette cassette;
 
     @Before
     public void setUp() throws Exception {
-        cassette = new Cassette( Nominal.ONE_HUND);
-        cassette.setCount(5);
+        subj = new CassetteOperationsImpl(cassetteRepository);
+        cassette = new Cassette().setNominal(Nominal.ONE_HUND);
+        cassette.setCassetteCount(5);
     }
 
     @Test
     public void add() {
         subj.add(cassette,4);
-        assertEquals(Integer.valueOf(9), cassette.getCount());
+        verify(cassetteRepository, times(1)).update(cassette.setCassetteCount(9));
     }
 
     @Test
     public void addZero() {
         subj.add(cassette,0);
-        assertEquals(Integer.valueOf(5), cassette.getCount());
+        verify(cassetteRepository, times(1)).update(cassette.setCassetteCount(5));
     }
 
     @Test
@@ -49,11 +50,13 @@ public class CassetteOperationsImplTest {
     @Test
     public void extract() {
         subj.extract(cassette,3);
+        verify(cassetteRepository, times(1)).update(cassette.setCassetteCount(2));
     }
 
     @Test
     public void extractZero() {
         subj.extract(cassette,0);
+        verify(cassetteRepository, times(1)).update(cassette.setCassetteCount(5));
     }
 
     @Test
@@ -61,9 +64,5 @@ public class CassetteOperationsImplTest {
         assertThrows(IncorectValue.class, () -> {
             subj.extract(cassette,-3);
         });
-    }
-
-    @Test
-    public void count() {
     }
 }

@@ -7,7 +7,7 @@ import ru.selezneva.L21_SpringBoot_adv.atm.ref.Nominal;
 import java.util.List;
 
 public interface ATMOperations {
-    int add(ATM atm, List<Nominal> pack);
+    int add(Integer atmID, List<Nominal> pack);
 
-    List<Nominal> get(ATM atm, int summ);
+    List<Nominal> get(Integer atmId, int summ);
 }

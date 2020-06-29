@@ -10,4 +10,8 @@ public class ATMException extends RuntimeException {
     public String getSbrfError() {
         return "СБ Ошибка";
     }
+
+    public ATMException(Throwable cause) {
+        super(cause);
+    }
 }

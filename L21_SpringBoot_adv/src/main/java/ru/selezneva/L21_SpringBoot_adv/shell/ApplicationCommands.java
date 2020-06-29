@@ -9,10 +9,10 @@ import ru.selezneva.L21_SpringBoot_adv.ATMStart;
 @ShellComponent
 @RequiredArgsConstructor
 public class ApplicationCommands {
-    private final ATMStart ATMStart;
+    private final ATMStart atmStart;
 
     @ShellMethod(value = "Start ATM", key = {"start"})
-    public void start(@ShellOption(defaultValue = "") String path) {
-        ATMStart.start(path);
+    public void start(@ShellOption(defaultValue = "0") String atmId) {
+        atmStart.start(Integer.parseInt(atmId));
     }
 }
